@@ -71,14 +71,6 @@ class UNET(nn.Module):
 
     def forward(self, x):
         skip_connections = []
-        
-        #Resnet
-        # for i,down in enumerate(self.resnet34_model):
-        #     x = down(x)
-        #     skip_connections.append(x)
-            
-        #Unet
-        
         for down in self.downs:
             x = down(x)
             skip_connections.append(x)
