@@ -5,14 +5,20 @@ Created on Mon Jul 26 11:06:57 2021
 
 @author: ahmedbilal
 """
+import torch
 from models.resunet34_pretrained import load_model,resnet_pretrained
 import torchvision.transforms.functional as TF
+import os
+desktop = os.path.join(os.path.expanduser('~'),"Desktop")
 
 
 
-class unet_inference():
-    def __init__(self, path_to_state_dict=None):
+
+class preTrainedResUnet_inference():
+    def __init__(self, output_channels=1):
+        self.output_channels = output_channels
         self.model = resnet_pretrained
+ 
         self.model.eval()
     
     def run_inference(self, input):
@@ -25,9 +31,13 @@ class unet_inference():
         assert(load_model == True)
         assert(len(input.shape)==3)
         #transform
-        input = TF.normalize(input, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        input = input.unsqueeze(0)
-        output = self.model.forward(input)
-        output = output.squeeze()
-        
-        return output
+        with torch.no_grad():
+            input = TF.normalize(input, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            input = input.unsqueeze(0)
+            output = self.model.forward(input)
+            if self.output_channels == 2:
+                channel_2 = torch.ones_like(output)-output
+                output = torch.cat((channel_2,output),dim =1)
+            output = output.squeeze()
+            
+            return output

@@ -67,6 +67,9 @@ model_.encoder.maxpool = Identity()
 
 
 if load_model:
-    model = torch.load('./best_model.pth')
-    
+    best_model = torch.load('./best_model.pth')
+    best_state_dict = best_model.state_dict()
+    model.load_state_dict(best_state_dict)
+
+
 resnet_pretrained = model

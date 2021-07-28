@@ -6,7 +6,7 @@ Created on Mon Jul 26 11:15:22 2021
 @author: ahmedbilal
 """
 import matplotlib.pyplot as plt
-from inference import unet_inference
+from inference import preTrainedResUnet_inference
 from PIL import Image
 import torchvision.transforms as transforms
 import torch
@@ -20,9 +20,12 @@ demo_im = to_tensor(demo_im)
 demo_im = demo_im[0:3, :, :]
 
 
-inference = unet_inference()
+inference = preTrainedResUnet_inference(output_channels=2)
 
 out = inference.run_inference(demo_im)
+if inference.output_channels == 2:
+    out = (torch.lt(out[0, :, :],out[1, :, :])).float()
 out = to_image(out)
+
 out.save(fp = demo_im_out)
 print('Saved!')
